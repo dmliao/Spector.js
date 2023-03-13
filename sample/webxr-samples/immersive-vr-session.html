@@ -46,7 +46,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
     <main style='text-align: center;'>
       <p>Click 'Enter XR' to see content</p> 
     </main>
-	<script src="../../.temp/spector.bundle.js"></script>
+    <script src="../../.temp/spector.bundle.js"></script>
     <script type="module">
       import {WebXRButton} from './js/util/webxr-button.js';
       import {Scene} from './js/render/scenes/scene.js';
@@ -55,8 +55,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
       import {SkyboxNode} from './js/render/nodes/skybox.js';
       import {QueryArgs} from './js/util/query-args.js';
 
-	  var spector = new SPECTOR.Spector();
-	  spector.displayUI();
+      var spector = new SPECTOR.Spector();
 
       // If requested, use the polyfill to provide support for mobile devices
       // and devices which only support WebVR.
@@ -120,17 +119,19 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
           xrCompatible: true
         });
 
-		// DM: Create spector context 
-		window.addEventListener('keydown', (e) => {
-			if (e.key.toLocaleLowerCase() == 'a') {
-				console.log('capturing to spector');
-				spector.captureNextFrame(spector.getXRContext())
-			}
-		})
+        // ALL SPECTORJS CAPTURING CODE GOES HERE
+        // This captures a frame when the 'A' key is pressed, since it's hard otherwise
+        // to grab frames from the context (the UI won't display properly)
+        window.addEventListener('keydown', (e) => {
+            if (e.key.toLocaleLowerCase() == 'a') {
+                console.log('capturing to spector');
+                spector.captureNextFrame(spector.getXRContext())
+            }
+        })
 
-		spector.onCapture.add((capture) => {
-			console.log(capture);
-		});
+        spector.onCapture.add((capture) => {
+            console.log(capture);
+        });
 
         // Create a renderer with that GL context (this is just for the samples
         // framework and has nothing to do with WebXR specifically.)

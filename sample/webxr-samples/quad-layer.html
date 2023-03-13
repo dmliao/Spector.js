@@ -59,7 +59,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
     <p>Click 'Enter VR' to see content</p>
   </main>
   
-	<script src="../../.temp/spector.bundle.js"></script>
+    <script src="../../.temp/spector.bundle.js"></script>
   <script type="module">
     import { WebXRButton } from './js/util/webxr-button.js';
     import { Scene, WebXRView } from './js/render/scenes/scene.js';
@@ -69,8 +69,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
     const CYLD_TEXTURE_MONO_PATH = './media/textures/rect-mono.png';
     const CYLD_TEXTURE_STEREO_PATH = './media/textures/rect-stereo-top-down.png';
 
-	var spector = new SPECTOR.Spector();
-	  spector.displayUI();
+    var spector = new SPECTOR.Spector();
     // If requested, use the polyfill to provide support for mobile devices
     // and devices which only support WebVR.
     import WebXRPolyfill from './js/third-party/webxr-polyfill/build/webxr-polyfill.module.js';
@@ -150,17 +149,19 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
       initGL();
 
-		// DM: Create spector context 
-		window.addEventListener('keydown', (e) => {
-			if (e.key.toLocaleLowerCase() == 'a') {
-				console.log('capturing to spector');
-				spector.captureNextFrame(gl)
-			}
-		})
+        // ALL SPECTORJS CAPTURING CODE GOES HERE
+        // This captures a frame when the 'A' key is pressed, since it's hard otherwise
+        // to grab frames from the context (the UI won't display properly)
+        window.addEventListener('keydown', (e) => {
+            if (e.key.toLocaleLowerCase() == 'a') {
+                console.log('capturing to spector');
+                spector.captureNextFrame(spector.getXRContext())
+            }
+        })
 
-		spector.onCapture.add((capture) => {
-			console.log(capture);
-		});
+        spector.onCapture.add((capture) => {
+            console.log(capture);
+        });
 
       xrFramebuffer = gl.createFramebuffer();
       xrGLFactory = new XRWebGLBinding(session, gl);
