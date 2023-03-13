@@ -11,8 +11,9 @@ import { CanvasSpy } from "./backend/spies/canvasSpy";
 import { Program } from "./backend/webGlObjects/webGlObjects";
 import { CaptureMenu } from "./embeddedFrontend/captureMenu/captureMenu";
 import { ResultView } from "./embeddedFrontend/resultView/resultView";
-import { XRSessionSpector } from "./polyfill/XRSessionSpector";
+import type { XRSessionSpector } from "./polyfill/XRSessionSpector";
 import { XRWebGLLayerSpector } from "./polyfill/XRWebGLLayerSpector";
+import { XRWebGLBindingSpector } from "./polyfill/XRWebGLBindingSpector";
 
 const CAPTURE_LIMIT = 10000; // Limit command count to 10000 record (to be kept in sync with the documentation)
 
@@ -115,7 +116,7 @@ export class Spector {
             }
 
             (window as any).XRWebGLLayer = XRWebGLLayerSpector;
-            (window as any).XRSession = XRSessionSpector;
+            (window as any).XRWebGLBinding = XRWebGLBindingSpector;
 
             // polyfill request session so Spector gets access to the session object.
             const existingRequestSession = navigator.xr.requestSession;
@@ -130,8 +131,32 @@ export class Spector {
                     return (navigator.xr as any).requestSessionInternal(mode, init).then((session: XRSession) => {
                         // listen to the XR Session here! When we do that, we'll stop listening to window.requestAnimationFrame
                         // and start listening to session.requestAnimationFrame
+
+                        // Feed the gl context through the session
+                        const spectorSession = session as XRSessionSpector;
+                        spectorSession._updateRenderState = session.updateRenderState;
+                        spectorSession.updateRenderState = async (
+                            renderStateInit?: XRRenderStateInit
+                        ): Promise<void> => {
+                            if (renderStateInit.baseLayer) {
+                                const polyfilledBaseLayer =
+                                    renderStateInit.baseLayer as XRWebGLLayerSpector;
+                                spectorSession.glContext = polyfilledBaseLayer.getContext();
+                            }
+
+                            if (renderStateInit.layers) {
+                                for (const layer of renderStateInit.layers) {
+                                    const layerAny: any = layer;
+                                    if (layerAny.glContext) {
+                                        spectorSession.glContext = layerAny.glContext;
+                                    }
+                                }
+                            }
+                            return spectorSession._updateRenderState(renderStateInit);
+                        };
+
                         this.timeSpy.listenXRSession(session);
-                        this.xrSession = session as XRSessionSpector;
+                        this.xrSession = spectorSession;
                         session.addEventListener("end", () => {
                             this.timeSpy.unlistenXRSession();
                             this.xrSession = undefined;
@@ -290,7 +315,7 @@ export class Spector {
         if (!this.xrSession) {
             Logger.error("No currently active WebXR session.");
         }
-        return this.xrSession.getContext();
+        return this.xrSession.glContext;
     }
 
     public captureCanvas(canvas: HTMLCanvasElement | OffscreenCanvas,
