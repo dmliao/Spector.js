@@ -1,0 +1,15 @@
+{
+	"compilerOptions": {
+		"target": "ES2020",
+		"module": "ES2020",
+		"noImplicitAny": false,
+		"moduleResolution": "node",
+		"allowSyntheticDefaultImports": true,
+		"esModuleInterop": true,
+		"removeComments": true,
+		"preserveConstEnums": true,
+		"allowJs": true
+	},
+	"include": ["**/*"],
+	"exclude": ["node_modules", "**/*.spec.ts"]
+}

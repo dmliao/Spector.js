@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="popup.css">
+    <title>SpectorJS WebXR</title>
+</head>
+<body>
+    <div id="targets"></div>
+	<button id="targetButton">Pull List of Tabs from Remote</button>
+	<div id="captureUI">
+		<p id="captureTarget"></p>
+        <p>
+            <label><input type="checkbox" id="quickCapture" /> Quick Capture (no thumbnails)</label> 
+        </p>
+        <p>
+            <label><input type="checkbox" id="fullCapture" /> Full Capture (real size textures: slow)</label> 
+        </p>
+        <p>
+            <input type="text" id="captureOnLoadCount" value="500" />
+            first commands (<label><input type="checkbox" id="captureOnLoadTransient" /> transient</label>):
+            <button id="captureNow">Capture</button>.
+        </p>
+    </div>
+    <script src="popup.js"></script>
+</body>
+</html>
