@@ -15,10 +15,9 @@ export type AttachToTargetMessage = {
 
 export type StartCaptureMessage = {
 	type: 'startCapture',
-	quickCapture?: boolean,
-	fullCapture?: boolean,
-	captureOnLoadCount?: number,
-	captureOnLoadTransient?: boolean,
+	quickCapture: boolean,
+	fullCapture: boolean,
+	captureOnLoadCount: number,
 }
 
 // messages from service worker to popup

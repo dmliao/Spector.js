@@ -26,6 +26,9 @@
   var refreshTargetsButton;
   var captureUI;
   var captureTargetLabel;
+  var quickCaptureCheckbox;
+  var fullCaptureCheckbox;
+  var commandCountInput;
   fakeWindow.onload = () => {
     initialize();
     fetchTargets();
@@ -39,6 +42,9 @@
     captureUI.style.display = "none";
     const captureButton = document.getElementById("captureNow");
     captureButton.onclick = capture;
+    quickCaptureCheckbox = document.getElementById("quickCapture");
+    fullCaptureCheckbox = document.getElementById("fullCapture");
+    commandCountInput = document.getElementById("captureOnLoadCount");
   };
   var fetchTargets = async () => {
     captureUI.style.display = "none";
@@ -81,8 +87,15 @@
     captureUI.style.display = "none";
   };
   var capture = async () => {
+    var commandCount = parseInt(commandCountInput.value);
+    if (commandCount < 0 || commandCount === Number.NaN) {
+      commandCount = 500;
+    }
     await chrome.runtime.sendMessage({
-      type: "startCapture"
+      type: "startCapture",
+      captureOnLoadCount: commandCount,
+      quickCapture: quickCaptureCheckbox.checked,
+      fullCapture: fullCaptureCheckbox.checked
     });
   };
 })();

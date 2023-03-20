@@ -9,7 +9,7 @@ import localforageImport from 'localforage/src/localforage.js';
 import initSpectorContentScript from "./injected/initSpector.js?raw";
 import setupCaptureContentScript from "./injected/setupCapture.js?raw";
 
-import { AnyMessage, ConnectedToTargetMessage, ErrorMessage, ListDevToolTargetsMessage } from "./types/messages";
+import { AnyMessage, ConnectedToTargetMessage, ErrorMessage, ListDevToolTargetsMessage, StartCaptureMessage } from "./types/messages";
 
 
 
@@ -74,7 +74,7 @@ chrome.runtime.onMessage.addListener(function (request: AnyMessage, sender, send
 
 		case 'startCapture': {
 			// TODO: also take into account full / quick capture
-			captureFromClient(websocketDebuggerURL).then(() => {
+			captureFromClient(websocketDebuggerURL, request).then(() => {
 				return true;
 			}).catch((e) => {
 
@@ -118,7 +118,7 @@ async function connectToClient(websocket: string) {
 	}
 }
 
-async function captureFromClient(websocket: string) {
+async function captureFromClient(websocket: string, options: StartCaptureMessage) {
 	let client: CDPTypes.Client;
 	try {
 		client = await CDP.CDP({
@@ -129,8 +129,14 @@ async function captureFromClient(websocket: string) {
 			// so we have to use the one from desktop
 			local: true,
 		});
+
+		// feed the options from the popup to the script on the remote tab
+		const processedSetupCaptureContentScript = setupCaptureContentScript
+			.replace("$COMMAND_COUNT", options.captureOnLoadCount.toString())
+			.replace("$QUICK_CAPTURE", options.quickCapture ? "true" : "false")
+			.replace("$FULL_CAPTURE", options.fullCapture ? "true" : "false");
 		const response = await client.Runtime.evaluate({
-			expression: setupCaptureContentScript,
+			expression: processedSetupCaptureContentScript,
 			awaitPromise: true,
 			returnByValue: true,
 		});

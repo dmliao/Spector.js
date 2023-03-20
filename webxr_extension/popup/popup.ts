@@ -7,12 +7,14 @@ let targetList: HTMLElement;
 let refreshTargetsButton: HTMLButtonElement;
 let captureUI: HTMLElement;
 let captureTargetLabel: HTMLElement;
+let quickCaptureCheckbox: HTMLInputElement;
+let fullCaptureCheckbox: HTMLInputElement;
+let commandCountInput: HTMLInputElement;
 
 window.onload = () => {
 	initialize();
 	fetchTargets();
 };
-
 
 const initialize = () => {
 	targetList = document.getElementById("targets");
@@ -24,6 +26,10 @@ const initialize = () => {
 
 	const captureButton = document.getElementById("captureNow");
 	captureButton.onclick = capture;
+
+	quickCaptureCheckbox = document.getElementById("quickCapture") as HTMLInputElement;
+	fullCaptureCheckbox = document.getElementById("fullCapture") as HTMLInputElement;
+	commandCountInput = document.getElementById("captureOnLoadCount") as HTMLInputElement;
 }
 
 const fetchTargets = async () => {
@@ -75,7 +81,14 @@ const onDisconnectedTarget = async () => {
 }
 
 const capture = async () => {
+	var commandCount = parseInt(commandCountInput.value);
+	if (commandCount < 0 || commandCount === Number.NaN) {
+		commandCount = 500;
+	}
 	await chrome.runtime.sendMessage<StartCaptureMessage>({
 		type: 'startCapture',
+		captureOnLoadCount: commandCount,
+		quickCapture: quickCaptureCheckbox.checked,
+		fullCapture: fullCaptureCheckbox.checked,
 	})
 }
