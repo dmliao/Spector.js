@@ -7782,6 +7782,9 @@
   // raw-loader:./injected/setupCapture.js?raw
   var setupCapture_default = "new Promise((fulfill, reject) => {\r\n	// this is a pure JS rather than TS file because any transpilation that causes\r\n	// the promise to not be the top-level object will cause runtime.evaluate to fail.\r\n	const onCaptureReturn = (capture) => {\r\n		window._spector.onCapture.remove(onCaptureReturn);\r\n		fulfill(capture);\r\n	}\r\n	const onError = (error) => {\r\n		window._spector.onError.remove(onError);\r\n		reject(error);\r\n	}\r\n\r\n	// $strings should be replaced by values in service-worker.ts\r\n	window._spector.captureContext(window._spector.getXRContext(),\r\n		$COMMAND_COUNT, $QUICK_CAPTURE, $FULL_CAPTURE);\r\n	window._spector.onCapture.add(onCaptureReturn);\r\n	window._spector.onError.add(onError);\r\n})\r\n";
 
+  // raw-loader:./injected/checkExistingSpector.js?raw
+  var checkExistingSpector_default = "new Promise((fulfill, reject) => {\r\n	if (window._spector) {\r\n		fulfill(true);\r\n	}\r\n	fulfill(false);\r\n});";
+
   // service-worker.ts
   var getRemoteTargets = async () => {
     const res = await fetch("http://localhost:9222/json");
@@ -7851,12 +7854,19 @@
       const { Network, Page } = client;
       await Network.enable();
       await Page.enable();
-      await Page.addScriptToEvaluateOnNewDocument({
-        source: initSpector_default
-      });
-      await Page.reload();
-      await Page.loadEventFired();
       await Page.bringToFront();
+      const checkSpectorResponse = await client.Runtime.evaluate({
+        expression: checkExistingSpector_default,
+        awaitPromise: true,
+        returnByValue: true
+      });
+      if (!checkSpectorResponse.result.value) {
+        await Page.addScriptToEvaluateOnNewDocument({
+          source: initSpector_default
+        });
+        await Page.reload();
+        await Page.loadEventFired();
+      }
     } catch (err) {
       console.error(err);
       throw err;

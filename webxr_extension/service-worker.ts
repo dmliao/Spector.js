@@ -8,6 +8,7 @@ import localforageImport from 'localforage/src/localforage.js';
 
 import initSpectorContentScript from "./injected/initSpector.js?raw";
 import setupCaptureContentScript from "./injected/setupCapture.js?raw";
+import checkExistingSpectorScript from "./injected/checkExistingSpector.js?raw";
 
 import { AnyMessage, ConnectedToTargetMessage, ErrorMessage, ListDevToolTargetsMessage, StartCaptureMessage } from "./types/messages";
 
@@ -73,7 +74,6 @@ chrome.runtime.onMessage.addListener(function (request: AnyMessage, sender, send
 		}
 
 		case 'startCapture': {
-			// TODO: also take into account full / quick capture
 			captureFromClient(websocketDebuggerURL, request).then(() => {
 				return true;
 			}).catch((e) => {
@@ -102,12 +102,23 @@ async function connectToClient(websocket: string) {
 		const { Network, Page } = client;
 		await Network.enable();
 		await Page.enable();
-		await Page.addScriptToEvaluateOnNewDocument({
-			source: initSpectorContentScript
-		})
-		await Page.reload();
-		await Page.loadEventFired();
+
+		// first, check if we already have spector on the page.
+		// if so, we don't try to reload it at all.
 		await Page.bringToFront();
+		const checkSpectorResponse = await client.Runtime.evaluate({
+			expression: checkExistingSpectorScript,
+			awaitPromise: true,
+			returnByValue: true,
+		})
+
+		if (!checkSpectorResponse.result.value) {
+			await Page.addScriptToEvaluateOnNewDocument({
+				source: initSpectorContentScript
+			})
+			await Page.reload();
+			await Page.loadEventFired();
+		}
 	} catch (err) {
 		console.error(err);
 		throw err;
