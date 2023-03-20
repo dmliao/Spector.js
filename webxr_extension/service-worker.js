@@ -7849,9 +7849,6 @@
         local: true
       });
       const { Network, Page } = client;
-      Network.requestWillBeSent((params) => {
-        console.log(params.request.url);
-      });
       await Network.enable();
       await Page.enable();
       await Page.addScriptToEvaluateOnNewDocument({
@@ -7884,8 +7881,8 @@
         awaitPromise: true,
         returnByValue: true
       });
-      console.log("Successful capture ", response.result.value);
       const localforage = localforage_default;
+      console.log(response.result.value);
       await localforage.setItem("capture", response.result.value);
       chrome.tabs.create({
         url: "result.html"

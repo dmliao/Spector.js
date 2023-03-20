@@ -19,6 +19,7 @@ const build = async () => {
 		console.log(outFile)
 		await esbuild.build({
 			entryPoints: [entryPoint],
+			logLevel: 'error',
 			bundle: true,
 			outfile: outFile
 		})
@@ -38,6 +39,7 @@ const build = async () => {
 		await esbuild.build({
 			entryPoints: [entryPoint],
 			bundle: true,
+			logLevel: 'error',
 			inject: ['./window-shim.js'],
 			plugins: [RawPlugin()],
 			outfile: outFile

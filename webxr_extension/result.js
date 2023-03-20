@@ -2215,7 +2215,7 @@
   var import_localforage = __toESM(require_localforage(), 1);
   var ui = null;
   fakeWindow.addEventListener("DOMContentLoaded", function() {
-    ui = new SPECTOR.EmbeddedFrontend.ResultView();
+    ui = new fakeWindow.SPECTOR.EmbeddedFrontend.ResultView();
     ui.display();
     import_localforage.default.getItem("capture").then((capture) => {
       addCapture(capture);

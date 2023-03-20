@@ -75,7 +75,6 @@ chrome.runtime.onMessage.addListener(function (request: AnyMessage, sender, send
 		case 'startCapture': {
 			// TODO: also take into account full / quick capture
 			captureFromClient(websocketDebuggerURL).then(() => {
-				// no response needed I guess.
 				return true;
 			}).catch((e) => {
 
@@ -100,13 +99,7 @@ async function connectToClient(websocket: string) {
 			// so we have to use the one from desktop
 			local: true,
 		});
-		// extract domains
 		const { Network, Page } = client;
-		// setup handlers
-		Network.requestWillBeSent((params) => {
-			console.log(params.request.url);
-		});
-		// enable events then start!
 		await Network.enable();
 		await Page.enable();
 		await Page.addScriptToEvaluateOnNewDocument({
