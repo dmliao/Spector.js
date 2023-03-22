@@ -34,6 +34,8 @@ export class TimeSpy {
     private speedRatio: number;
     private willPlayNextFrame: boolean;
 
+    private currentXRSession: XRSession | undefined;
+
     constructor(spiedWindow?: { [name: string]: Function }) {
         this.spiedWindow = spiedWindow || window;
         this.lastFrame = 0;
@@ -74,6 +76,31 @@ export class TimeSpy {
         return 1000 * 60 / accumulator;
     }
 
+    public listenXRSession(session: XRSession) {
+        if (this.currentXRSession) {
+            this.unlistenXRSession();
+        }
+        for (const Spy of TimeSpy.requestAnimationFrameFunctions) {
+            this.unspyRequestAnimationFrame(Spy, this.spiedWindow);
+        }
+        this.spyRequestAnimationFrame("requestAnimationFrame", session);
+        this.currentXRSession = session;
+    }
+
+    public unlistenXRSession() {
+        if (!this.currentXRSession) {
+            return;
+        }
+
+        this.unspyRequestAnimationFrame("requestAnimationFrame", this.currentXRSession);
+        this.currentXRSession = undefined;
+        // listen to the regular frames again.
+        for (const Spy of TimeSpy.requestAnimationFrameFunctions) {
+            this.spyRequestAnimationFrame(Spy, this.spiedWindow);
+        }
+
+    }
+
     private init(): void {
         for (const Spy of TimeSpy.requestAnimationFrameFunctions) {
             this.spyRequestAnimationFrame(Spy, this.spiedWindow);
@@ -89,7 +116,6 @@ export class TimeSpy {
             });
         }
     }
-
     private spyRequestAnimationFrame(functionName: string, owner: any): void {
         // Needs both this.
         // tslint:disable-next-line
@@ -102,6 +128,13 @@ export class TimeSpy {
             const result = OriginFunctionHelper.executeOriginFunction(owner, functionName, [onCallback] as any);
             return result;
         };
+
+    }
+
+    private unspyRequestAnimationFrame(functionName: string, owner: any): void {
+        if (OriginFunctionHelper.getOriginFunction(owner, functionName)) {
+            owner[functionName] = OriginFunctionHelper.getOriginFunction(owner, functionName);
+        }
 
     }
 
