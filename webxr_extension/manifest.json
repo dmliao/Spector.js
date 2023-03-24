@@ -1,0 +1,25 @@
+{
+    "manifest_version": 3,
+    "name": "Spector.js WebXR",
+    "description": "Troubleshoot your WebXR scenes on your headset.",
+    "version": "0.0.1",
+    "icons": {
+        "19": "spectorjs-19.png",
+        "48": "spectorjs-48.png",
+        "128": "spectorjs-128.png"
+    },
+    "action": {
+        "default_title": "Debug with Spector",
+        "default_popup": "popup/popup.html"
+    },
+    "permissions": [
+        "debugger",
+        "history"
+    ],
+    "host_permissions": [
+        "*://*/*"
+    ],
+    "background": {
+        "service_worker": "service-worker.js"
+    }
+}

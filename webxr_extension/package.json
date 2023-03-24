@@ -1,0 +1,25 @@
+{
+    "name": "spectorjs-webxr-extension",
+    "private": true,
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "type": "module",
+    "scripts": {
+        "build": "node build",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [],
+    "author": "",
+    "dependencies": {
+        "chrome-remote-interface": "^0.32.0",
+        "localforage": "^1.10.0"
+    },
+    "devDependencies": {
+        "@types/chrome": "^0.0.210",
+        "@types/chrome-remote-interface": "^0.31.9",
+        "esbuild": "^0.17.5",
+        "esbuild-plugin-raw": "^0.1.7",
+        "resolve-glob": "^1.0.0"
+    }
+}
