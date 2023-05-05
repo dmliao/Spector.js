@@ -13,7 +13,8 @@
     "author": "",
     "dependencies": {
         "chrome-remote-interface": "^0.32.0",
-        "localforage": "^1.10.0"
+        "localforage": "^1.10.0",
+        "slim-select": "^2.5.0"
     },
     "devDependencies": {
         "@types/chrome": "^0.0.210",

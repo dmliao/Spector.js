@@ -2,25 +2,47 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+	<link rel="stylesheet" href="../node_modules/slim-select/dist/slimselect.css">
     <link rel="stylesheet" href="popup.css">
     <title>SpectorJS WebXR</title>
 </head>
 <body>
-    <div id="targets"></div>
-    <button id="targetButton">Pull List of Tabs from Remote</button>
-    <div id="captureUI">
-        <p id="captureTarget"></p>
-        <p>
-            <label><input type="checkbox" id="quickCapture" /> Quick Capture (no thumbnails)</label> 
-        </p>
-        <p>
-            <label><input type="checkbox" id="fullCapture" /> Full Capture (real size textures: slow)</label> 
-        </p>
-        <p>
-            <input type="text" id="captureOnLoadCount" value="500" />
-            <button id="captureNow">Capture</button>.
-        </p>
-    </div>
+	<!--cannot connect to headset -->
+	<div id="noTargets" class="view">
+		<img src="./warning.png" />
+		<p>No tabs could be detected.</p>
+		<p>Ensure your headset is connected and the web browser is open.</p>
+		<button class="refreshTargetButton max"><span class="icon icon-refresh"></span> <span class="label-after-image">Refresh Tab List</span></button>
+	</div>
+
+	<div id="loadingTargets" class="view">
+		<p>Checking for tabs on headset...</p>
+	</div>
+
+	<!-- we're connected! -->
+	<div id="hasTargets" class="view">
+		<div class="row">
+			<select id="targets"></select>
+			<button title="Refresh Tab List" class="refreshTargetButton"><span class="icon icon-refresh"></span></button>
+		</div>
+		<div id="captureUI">
+			<p id="captureTarget"></p>
+			<p>
+				<label><input type="checkbox" id="quickCapture" /> Quick Capture (no thumbnails)</label> 
+			</p>
+			<p>
+				<label><input type="checkbox" id="fullCapture" /> Full Capture (real size textures: slow)</label> 
+			</p>
+			<p>
+				<input type="text" id="captureOnLoadCount" value="500" />
+				<label for="captureOnLoadCount">first commands</label>
+			</p>
+			<button class="max" id="captureNow">Capture</button>
+		</div>
+	</div>
+    
+    
+    
     <script src="popup.js"></script>
 </body>
 </html>

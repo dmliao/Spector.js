@@ -11,8 +11,7 @@ new Promise((fulfill, reject) => {
     }
 
     // $strings should be replaced by values in service-worker.ts
-    window._spector.captureContext(window._spector.getXRContext(),
-        $COMMAND_COUNT, $QUICK_CAPTURE, $FULL_CAPTURE);
+    window._spector.captureXRContext($COMMAND_COUNT, $QUICK_CAPTURE, $FULL_CAPTURE);
     window._spector.onCapture.add(onCaptureReturn);
     window._spector.onError.add(onError);
 })

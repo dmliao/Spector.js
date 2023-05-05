@@ -8272,9 +8272,9 @@
             t2.appendChild(document.createTextNode(e3));
           }
         };
-      }, 298: (e2, t2, n2) => {
+      }, 107: (e2, t2, n2) => {
         "use strict";
-        n2.r(t2), n2.d(t2, { EmbeddedFrontend: () => Gt, Spector: () => Wt });
+        n2.r(t2), n2.d(t2, { EmbeddedFrontend: () => Wt, Spector: () => Vt });
         class i {
           static isBuildableProgram(e3) {
             return !!e3 && !!e3[this.rebuildProgramFunctionName];
@@ -8446,9 +8446,13 @@
             const n3 = this.getOriginFunctionName(t3);
             e3[n3] || (e3[n3] = e3[t3]);
           }
-          static getOriginFunction(e3, t3) {
-            if (e3 && e3[t3])
-              return e3[this.getOriginFunctionName(t3)];
+          static resetOriginFunction(e3, t3) {
+            if (!e3)
+              return;
+            if (!e3[t3])
+              return;
+            const n3 = this.getOriginFunctionName(t3);
+            e3[n3] && (e3[t3] = e3[n3], delete e3[n3]);
           }
           static storePrototypeOriginFunction(e3, t3) {
             if (!e3)
@@ -8526,7 +8530,7 @@
         E.originFunctionPrefix = "__SPECTOR_Origin_";
         class v {
           static getWebGlObjectTag(e3) {
-            return e3 ? e3[v.SPECTOROBJECTTAGKEY] : null;
+            return null == e3 ? null : e3[v.SPECTOROBJECTTAGKEY];
           }
           static attachWebGlObjectTag(e3, t3) {
             t3.displayText = v.stringifyWebGlObjectTag(t3), e3[v.SPECTOROBJECTTAGKEY] = t3;
@@ -8896,7 +8900,7 @@
           }
         }
         function V(e3) {
-          return null == e3 || false === e3 ? "" : `${e3.toFixed(0)} (0b${(e3 >>> 0).toString(2)})`;
+          return null == e3 ? "" : `${e3.toFixed(0)} (0b${(e3 >>> 0).toString(2)})`;
         }
         W.commandName = "scissor";
         class H extends C {
@@ -10457,19 +10461,6 @@
               e3 += this.lastSixtyFramesDuration[t3];
             return 0 === e3 ? 0 : 6e4 / e3;
           }
-          listenXRSession(e3) {
-            this.currentXRSession && this.unlistenXRSession();
-            for (const e4 of Ve.requestAnimationFrameFunctions)
-              this.unspyRequestAnimationFrame(e4, this.spiedWindow);
-            this.spyRequestAnimationFrame("requestAnimationFrame", e3), this.currentXRSession = e3;
-          }
-          unlistenXRSession() {
-            if (this.currentXRSession) {
-              this.unspyRequestAnimationFrame("requestAnimationFrame", this.currentXRSession), this.currentXRSession = void 0;
-              for (const e3 of Ve.requestAnimationFrameFunctions)
-                this.spyRequestAnimationFrame(e3, this.spiedWindow);
-            }
-          }
           init() {
             for (const e3 of Ve.requestAnimationFrameFunctions)
               this.spyRequestAnimationFrame(e3, this.spiedWindow);
@@ -10487,9 +10478,6 @@
               }), r2 = E.executeOriginFunction(t3, e3, [s2]);
               return r2;
             };
-          }
-          unspyRequestAnimationFrame(e3, t3) {
-            E.getOriginFunction(t3, e3) && (t3[e3] = E.getOriginFunction(t3, e3));
           }
           spySetTimer(e3) {
             const t3 = this, n3 = this.spiedWindow, i2 = "setTimeout" === e3;
@@ -11619,15 +11607,7 @@
             this.searchText = "";
           }
         }
-        class Dt extends XRWebGLLayer {
-          constructor(e3, t3, n3) {
-            super(e3, t3, n3), this.glContext = t3;
-          }
-          getContext() {
-            return this.glContext;
-          }
-        }
-        class Ut extends XRWebGLBinding {
+        class Dt extends XRWebGLBinding {
           constructor(e3, t3) {
             super(e3, t3), this.glContext = t3;
           }
@@ -11636,59 +11616,84 @@
             return t3.glContext = this.glContext, t3;
           }
         }
-        const Gt = { CaptureMenu: gt, ResultView: Pt };
-        class Wt {
-          constructor(e3 = true) {
-            if (this.noFrameTimeout = -1, this.captureNextFrames = 0, this.captureNextCommands = 0, this.quickCapture = false, this.fullCapture = false, this.retry = 0, this.contexts = [], this.enableXRCapture = e3, this.timeSpy = new Ve(), this.onCaptureStarted = new o(), this.onCapture = new o(), this.onError = new o(), this.timeSpy.onFrameStart.add(this.onFrameStart, this), this.timeSpy.onFrameEnd.add(this.onFrameEnd, this), this.timeSpy.onError.add(this.onErrorInternal, this), this.enableXRCapture) {
-              if (!navigator.xr)
-                return;
-              window.XRWebGLLayer = Dt, window.XRWebGLBinding = Ut;
-              const e4 = navigator.xr.requestSession;
-              Object.defineProperty(navigator.xr, "requestSessionInternal", { writable: true }), navigator.xr.requestSessionInternal = e4;
-              const t3 = (e5, t4) => ((e6, t5) => navigator.xr.requestSessionInternal(e6, t5).then((e7) => {
-                const t6 = e7;
-                return t6._updateRenderState = e7.updateRenderState, t6.updateRenderState = (e8) => {
-                  return n3 = this, i2 = void 0, r2 = function* () {
-                    if (e8.baseLayer) {
-                      const n4 = e8.baseLayer;
-                      t6.glContext = n4.getContext();
-                    }
-                    if (e8.layers)
-                      for (const n4 of e8.layers) {
-                        const e9 = n4;
-                        e9.glContext && (t6.glContext = e9.glContext);
-                      }
-                    return t6._updateRenderState(e8);
-                  }, new ((s2 = void 0) || (s2 = Promise))(function(e9, t7) {
-                    function o2(e10) {
-                      try {
-                        l2(r2.next(e10));
-                      } catch (e11) {
-                        t7(e11);
-                      }
-                    }
-                    function a2(e10) {
-                      try {
-                        l2(r2.throw(e10));
-                      } catch (e11) {
-                        t7(e11);
-                      }
-                    }
-                    function l2(t8) {
-                      var n4;
-                      t8.done ? e9(t8.value) : (n4 = t8.value, n4 instanceof s2 ? n4 : new s2(function(e10) {
-                        e10(n4);
-                      })).then(o2, a2);
-                    }
-                    l2((r2 = r2.apply(n3, i2 || [])).next());
-                  });
-                  var n3, i2, s2, r2;
-                }, this.timeSpy.listenXRSession(e7), this.xrSession = t6, e7.addEventListener("end", () => {
-                  this.timeSpy.unlistenXRSession(), this.xrSession = void 0;
-                }), Promise.resolve(e7);
-              }))(e5, t4);
-              Object.defineProperty(navigator.xr, "requestSession", { writable: true }), navigator.xr.requestSession = t3;
+        class Ut extends XRWebGLLayer {
+          constructor(e3, t3, n3) {
+            super(e3, t3, n3), this.glContext = t3;
+          }
+          getContext() {
+            return this.glContext;
+          }
+        }
+        class Gt {
+          constructor(e3) {
+            this.timeSpy = e3, this.init();
+          }
+          spyXRSession(e3) {
+            this.currentXRSession && this.unspyXRSession();
+            for (const e4 of Ve.requestAnimationFrameFunctions)
+              E.resetOriginFunction(this.timeSpy.spiedWindow, e4);
+            this.timeSpy.spyRequestAnimationFrame("requestAnimationFrame", e3), this.currentXRSession = e3;
+          }
+          unspyXRSession() {
+            if (this.currentXRSession) {
+              E.resetOriginFunction(this.currentXRSession, "requestAnimationFrame"), this.currentXRSession = void 0;
+              for (const e3 of Ve.requestAnimationFrameFunctions)
+                this.timeSpy.spyRequestAnimationFrame(e3, this.timeSpy.spiedWindow);
             }
+          }
+          init() {
+            if (!navigator.xr)
+              return;
+            window.XRWebGLLayer = Ut, window.XRWebGLBinding = Dt;
+            const e3 = navigator.xr.requestSession;
+            Object.defineProperty(navigator.xr, "requestSessionInternal", { writable: true }), navigator.xr.requestSessionInternal = e3, Object.defineProperty(navigator.xr, "requestSession", { writable: true }), navigator.xr.requestSession = (e4, t3) => ((e5, t4) => navigator.xr.requestSessionInternal(e5, t4).then((e6) => {
+              const t5 = e6;
+              return t5._updateRenderState = e6.updateRenderState, t5.updateRenderState = (e7) => {
+                return n3 = this, i2 = void 0, r2 = function* () {
+                  if (e7.baseLayer) {
+                    const n4 = e7.baseLayer;
+                    t5.glContext = n4.getContext();
+                  }
+                  if (e7.layers)
+                    for (const n4 of e7.layers) {
+                      const e8 = n4;
+                      e8.glContext && (t5.glContext = e8.glContext);
+                    }
+                  return t5._updateRenderState(e7);
+                }, new ((s2 = void 0) || (s2 = Promise))(function(e8, t6) {
+                  function o2(e9) {
+                    try {
+                      l2(r2.next(e9));
+                    } catch (e10) {
+                      t6(e10);
+                    }
+                  }
+                  function a2(e9) {
+                    try {
+                      l2(r2.throw(e9));
+                    } catch (e10) {
+                      t6(e10);
+                    }
+                  }
+                  function l2(t7) {
+                    var n4;
+                    t7.done ? e8(t7.value) : (n4 = t7.value, n4 instanceof s2 ? n4 : new s2(function(e9) {
+                      e9(n4);
+                    })).then(o2, a2);
+                  }
+                  l2((r2 = r2.apply(n3, i2 || [])).next());
+                });
+                var n3, i2, s2, r2;
+              }, this.spyXRSession(t5), e6.addEventListener("end", () => {
+                this.unspyXRSession();
+              }), Promise.resolve(e6);
+            }))(e4, t3);
+          }
+        }
+        const Wt = { CaptureMenu: gt, ResultView: Pt };
+        class Vt {
+          constructor(e3 = {}) {
+            this.noFrameTimeout = -1, this.options = Object.assign({ enableXRCapture: false }, e3), this.captureNextFrames = 0, this.captureNextCommands = 0, this.quickCapture = false, this.fullCapture = false, this.retry = 0, this.contexts = [], this.timeSpy = new Ve(), this.onCaptureStarted = new o(), this.onCapture = new o(), this.onError = new o(), this.timeSpy.onFrameStart.add(this.onFrameStart, this), this.timeSpy.onFrameEnd.add(this.onFrameEnd, this), this.timeSpy.onError.add(this.onErrorInternal, this), this.options.enableXRCapture && (this.xrSpy = new Gt(this.timeSpy));
           }
           static getFirstAvailable3dContext(e3) {
             return this.tryGetContextFromHelperField(e3) || this.tryGetContextFromCanvas(e3, "webgl") || this.tryGetContextFromCanvas(e3, "experimental-webgl") || this.tryGetContextFromCanvas(e3, "webgl2") || this.tryGetContextFromCanvas(e3, "experimental-webgl2");
@@ -11761,21 +11766,21 @@
           getAvailableContexts() {
             return this.getAvailableContexts();
           }
-          getXRContext() {
-            return this.enableXRCapture || r.error("Cannot retrieve WebXR context if capturing WebXR is disabled."), this.xrSession || r.error("No currently active WebXR session."), this.xrSession.glContext;
-          }
           captureCanvas(e3, t3 = 0, n3 = false, i2 = false) {
             const s2 = this.getAvailableContextSpyByCanvas(e3);
             if (s2)
               this.captureContextSpy(s2, t3, n3, i2);
             else {
-              const s3 = Wt.getFirstAvailable3dContext(e3);
+              const s3 = Vt.getFirstAvailable3dContext(e3);
               s3 ? this.captureContext(s3, t3, n3, i2) : r.error("No webgl context available on the chosen canvas.");
             }
           }
           captureContext(e3, t3 = 0, n3 = false, i2 = false) {
             let s2 = this.getAvailableContextSpyByCanvas(e3.canvas);
             s2 || (s2 = e3.getIndexedParameter ? new We({ context: e3, version: 2, recordAlways: false }) : new We({ context: e3, version: 1, recordAlways: false }), s2.onMaxCommand.add(this.stopCapture, this), this.contexts.push({ canvas: s2.context.canvas, contextSpy: s2 })), s2 && this.captureContextSpy(s2, t3, n3, i2);
+          }
+          captureXRContext(e3 = 0, t3 = false, n3 = false) {
+            this.captureContext(this.getXRContext(), e3, t3, n3);
           }
           captureContextSpy(e3, t3 = 0, n3 = false, i2 = false) {
             this.quickCapture = n3, this.fullCapture = i2, this.capturingContext ? this.onErrorInternal("Already capturing a context.") : (this.retry = 0, this.capturingContext = e3, this.capturingContext.setMarker(this.marker), (t3 = Math.min(t3, 1e4)) > 0 ? this.captureCommands(t3) : this.captureFrames(1), this.noFrameTimeout = setTimeout(() => {
@@ -11819,6 +11824,9 @@
             for (const t3 of this.contexts)
               if (t3.canvas === e3)
                 return t3.contextSpy;
+          }
+          getXRContext() {
+            return this.options.enableXRCapture || r.error("Cannot retrieve WebXR context if capturing WebXR is disabled."), this.xrSpy.currentXRSession || r.error("No currently active WebXR session."), this.xrSpy.currentXRSession.glContext;
           }
           onFrameStart() {
             this.captureNextCommands > 0 || (this.captureNextFrames > 0 ? (this.capturingContext && (this.onCaptureStarted.trigger(void 0), this.capturingContext.startCapture(0, this.quickCapture, this.fullCapture)), this.captureNextFrames--) : this.capturingContext = void 0);
@@ -12117,7 +12125,7 @@
           n.o(t2, i) && !n.o(e2, i) && Object.defineProperty(e2, i, { enumerable: true, get: t2[i] });
       }, n.o = (e2, t2) => Object.prototype.hasOwnProperty.call(e2, t2), n.r = (e2) => {
         "undefined" != typeof Symbol && Symbol.toStringTag && Object.defineProperty(e2, Symbol.toStringTag, { value: "Module" }), Object.defineProperty(e2, "__esModule", { value: true });
-      }, n.nmd = (e2) => (e2.paths = [], e2.children || (e2.children = []), e2), n.nc = void 0, n(819), n(176), n(793), n(655), n(18), n(298);
+      }, n.nmd = (e2) => (e2.paths = [], e2.children || (e2.children = []), e2), n.nc = void 0, n(819), n(176), n(793), n(655), n(18), n(107);
     })());
   };
 
