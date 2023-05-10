@@ -28,9 +28,9 @@
     "start": "run-p html watch -l",
     "build:bundle": "webpack --config tools/webpack.config.js --env=prod",
     "build:copybuild:copy:bundle": "node ./tools/copy.js /../dist/spector.bundle.js /../extensions/spector.bundle.js",
-	"build:copybuild:copy:bundleXR": "node ./tools/copy.js /../dist/spector.bundle.js /../webxr_extension/spector.bundle.js",
+	"build:copybuild:copy:bundleXR": "node ./tools/copy.js /../dist/spector.bundle.js /../webxr_extension/src/spector.bundle.js",
     "build:concatBundleFunc": "concat-cli -f tools/spector.ext.header.js dist/spector.bundle.js tools/spector.ext.footer.js -o extensions/spector.bundle.func.js",
-	"build:concatBundleFuncXR": "concat-cli -f tools/spector.webxr.ext.header.js dist/spector.bundle.js tools/spector.ext.footer.js -o webxr_extension/spector.bundle.func.js",
+	"build:concatBundleFuncXR": "concat-cli -f tools/spector.webxr.ext.header.js dist/spector.bundle.js tools/spector.ext.footer.js -o webxr_extension/src/spector.bundle.func.js",
     "build:tslint": "tslint -c ./tslint.json -p ./src/tsconfig.json",
     "build": "run-s build:tslint build:bundle build:copybuild:copy:bundle build:copybuild:copy:bundleXR build:concatBundleFunc build:concatBundleFuncXR -n",
     "test": "echo \"Error: no test specified\" && exit 1"
