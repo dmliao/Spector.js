@@ -1,4 +1,4 @@
-import { XRSessionSpector } from "../../polyfill/XRSessionSpector";
+import type { XRSessionSpector } from "../../polyfill/XRSessionSpector";
 import { XRWebGLBindingSpector } from "../../polyfill/XRWebGLBindingSpector";
 import { XRWebGLLayerSpector } from "../../polyfill/XRWebGLLayerSpector";
 import { OriginFunctionHelper } from "../utils/originFunctionHelper";
@@ -66,7 +66,7 @@ export class XRSpy {
                     ): Promise<void> => {
                         if (renderStateInit.baseLayer) {
                             const polyfilledBaseLayer =
-                                renderStateInit.baseLayer as XRWebGLLayerSpector;
+                                renderStateInit.baseLayer as any;
                             spectorSession.glContext = polyfilledBaseLayer.getContext();
                         }
 
